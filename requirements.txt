@@ -1,0 +1,12 @@
+pandas 
+numpy 
+matplotlib 
+seaborn
+scikit-learn
+sentence-transformers
+chromadb
+faiss-cpu
+langchain
+transformers
+gradio
+jupyter
