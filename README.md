@@ -1,4 +1,5 @@
 # Intelligent Complaint Analysis for Financial Services
+
 ## Week 7 Challenge – Interim Submission (Task 1 & Task 2)
 
 ### 10 Academy – Artificial Intelligence Mastery Program
@@ -7,49 +8,18 @@
 
 ## Project Overview
 
-CrediTrust Financial is a rapidly growing digital financial services provider operating across East Africa. The company receives thousands of customer complaints every month regarding products such as Credit Cards, Personal Loans, Savings Accounts, and Money Transfers.
+CrediTrust Financial receives millions of customer complaints across multiple financial products. These complaints contain valuable insights into customer experiences, service issues, fraud concerns, and operational challenges.
 
-The objective of this project is to build the foundation of a Retrieval-Augmented Generation (RAG) system that enables internal stakeholders to query customer complaints using natural language and obtain evidence-based insights.
+The goal of this project is to build the foundation of a Retrieval-Augmented Generation (RAG) system that enables stakeholders to query customer complaints using natural language and receive evidence-based answers supported by complaint narratives.
 
 This interim submission covers:
 
-- Task 1: Exploratory Data Analysis (EDA) and Data Preprocessing
-- Task 2: Text Chunking, Embedding Generation, and Vector Store Construction
+* Task 1: Exploratory Data Analysis (EDA) and Data Preprocessing
+* Task 2: Text Chunking, Embedding Generation, and Vector Store Construction
 
 ---
 
-## Business Objective
-
-The project aims to transform unstructured customer complaints into actionable insights by:
-
-- Identifying major complaint trends faster
-- Empowering non-technical teams to access complaint information
-- Supporting proactive issue identification and decision-making
-
----
-
-## Dataset
-
-Source: Consumer Financial Protection Bureau (CFPB)
-
-The dataset contains:
-
-- Consumer complaint narratives
-- Product information
-- Company information
-- Issue and sub-issue categories
-- Complaint metadata
-
-For this challenge, only complaints related to the following product categories were retained:
-
-1. Credit Cards
-2. Personal Loans
-3. Savings Accounts
-4. Money Transfers
-
----
-
-## Project Structure
+## Repository Structure
 
 ```text
 rag-complaint-chatbot/
@@ -57,15 +27,22 @@ rag-complaint-chatbot/
 ├── data/
 │   ├── raw/
 │   └── processed/
+│       └── filtered_complaints.csv
 │
 ├── notebooks/
 │   └── task1_eda.ipynb
 │
 ├── src/
-│
-├── vector_store/
+│   ├── preprocess.py
+│   ├── chunking.py
+│   ├── embedding.py
+│   ├── vector_store.py
+│   └── build_vector_store.py
 │
 ├── tests/
+│   └── test_preprocess.py
+│
+├── vector_store/
 │
 ├── requirements.txt
 ├── README.md
@@ -74,67 +51,46 @@ rag-complaint-chatbot/
 
 ---
 
-# Task 1: Exploratory Data Analysis & Preprocessing
+# Task 1: Exploratory Data Analysis & Data Preprocessing
 
 ## Objectives
 
-- Understand the structure of complaint data
-- Analyze complaint distribution
-- Investigate narrative quality
-- Clean and prepare text for semantic search
+* Explore complaint distributions across products
+* Analyze narrative quality and completeness
+* Investigate narrative length characteristics
+* Clean and prepare complaint narratives for retrieval tasks
 
----
+## Dataset Overview
 
-## EDA Activities
+Source: CFPB Consumer Complaint Database
 
-### Product Distribution Analysis
+### Initial Dataset Statistics
 
-The distribution of complaints across product categories was analyzed to understand data imbalance and representation.
+| Metric                       | Value     |
+| ---------------------------- | --------- |
+| Total Complaints             | 9,609,797 |
+| Number of Features           | 18        |
+| Missing Narratives           | 6,629,041 |
+| Missing Narrative Percentage | 68.98%    |
 
-### Narrative Length Analysis
+## Data Preprocessing Pipeline
 
-Consumer complaint narrative lengths were measured using word counts to identify:
+The preprocessing workflow includes:
 
-- Extremely short complaints
-- Extremely long complaints
-- Average complaint length
+* Filtering target products
+* Removing empty complaint narratives
+* Lowercasing text
+* Removing special characters
+* Removing unnecessary whitespace
+* Cleaning boilerplate text
 
-Visualizations were created to better understand narrative distributions.
+Implemented in:
 
-### Missing Narrative Analysis
+```text
+src/preprocess.py
+```
 
-Complaints with missing consumer narratives were identified and quantified.
-
----
-
-## Data Filtering
-
-The dataset was filtered to retain only the following products:
-
-- Credit Card
-- Personal Loan
-- Savings Account
-- Money Transfer
-
-Records with missing or empty narratives were removed.
-
----
-
-## Text Cleaning
-
-The following preprocessing steps were applied:
-
-- Conversion to lowercase
-- Removal of special characters
-- Removal of punctuation
-- Removal of boilerplate phrases
-- Whitespace normalization
-
----
-
-## Output
-
-Generated dataset:
+### Output
 
 ```text
 data/processed/filtered_complaints.csv
@@ -142,29 +98,31 @@ data/processed/filtered_complaints.csv
 
 ---
 
-# Task 2: Text Chunking, Embedding & Vector Store Construction
+# Task 2: Text Chunking, Embedding, and Vector Store Construction
 
 ## Objectives
 
-Prepare complaint narratives for semantic search and retrieval.
-
----
+Prepare complaint narratives for semantic retrieval and future RAG integration.
 
 ## Sampling Strategy
 
-A stratified sampling approach was used to create a representative subset of complaints.
+A stratified sampling approach was applied to preserve representation across product categories while reducing computational cost.
 
-Characteristics:
+Target sample size:
 
-- Approximately 10,000–15,000 complaints
-- Preserves proportional representation of each product category
-- Ensures balanced semantic coverage
-
----
+```text
+10,000 – 15,000 complaints
+```
 
 ## Text Chunking
 
-Long complaint narratives were split into smaller chunks using:
+Implemented in:
+
+```text
+src/chunking.py
+```
+
+Method:
 
 ```python
 RecursiveCharacterTextSplitter
@@ -177,64 +135,57 @@ chunk_size = 500
 chunk_overlap = 50
 ```
 
-### Justification
+### Why Chunking?
 
-- Preserves semantic meaning
-- Improves retrieval quality
-- Reduces embedding information loss
-- Maintains context continuity between chunks
+* Preserves semantic context
+* Improves retrieval quality
+* Reduces information loss
+* Supports efficient embedding generation
 
----
+## Embedding Generation
 
-## Embedding Model
+Implemented in:
 
-Model used:
+```text
+src/embedding.py
+```
+
+Embedding Model:
 
 ```text
 sentence-transformers/all-MiniLM-L6-v2
 ```
 
-### Why This Model?
+### Model Benefits
 
-- Lightweight and efficient
-- Produces high-quality sentence embeddings
-- Widely used in semantic search systems
-- Generates 384-dimensional embeddings
-- Recommended in challenge resources
+* Lightweight and efficient
+* Generates 384-dimensional embeddings
+* Suitable for semantic similarity search
+* Widely used in RAG systems
 
----
+## Vector Store Construction
 
-## Embedding Generation
+Implemented in:
 
-Each text chunk was converted into a dense vector representation using Sentence Transformers.
-
-Output:
-
-```python
-embeddings = model.encode(
-    chunks,
-    show_progress_bar=True
-)
+```text
+src/vector_store.py
+src/build_vector_store.py
 ```
 
----
-
-## Vector Database
-
-Vector Store:
+Vector Database:
 
 ```text
 ChromaDB
 ```
 
-Stored information:
+Stored Metadata:
 
-- Chunk text
-- Complaint ID
-- Product Category
-- Embedding Vector
+* Complaint ID
+* Product Category
+* Complaint Chunk Text
+* Embedding Vector
 
-The vector store is persisted in:
+Persisted Location:
 
 ```text
 vector_store/
@@ -242,72 +193,20 @@ vector_store/
 
 ---
 
-## Deliverables Completed
+# Running the Project
 
-### Task 1
-
-- [x] EDA Notebook
-- [x] Product Distribution Analysis
-- [x] Narrative Length Analysis
-- [x] Missing Narrative Analysis
-- [x] Data Filtering
-- [x] Text Cleaning
-- [x] Filtered Dataset Export
-
-### Task 2
-
-- [x] Stratified Sampling
-- [x] Text Chunking
-- [x] Embedding Generation
-- [x] ChromaDB Index Construction
-- [x] Vector Store Persistence
-
----
-
-## Technologies Used
-
-### Data Processing
-
-- Pandas
-- NumPy
-
-### Visualization
-
-- Matplotlib
-- Seaborn
-
-### Machine Learning & NLP
-
-- Sentence Transformers
-- LangChain
-
-### Vector Database
-
-- ChromaDB
-
-### Development Environment
-
-- Python 3.11+
-- Jupyter Notebook
-
----
-
-## Reproducing Results
-
-### Clone Repository
+## 1. Clone Repository
 
 ```bash
-git clone https://github.com/<username>/rag-complaint-chatbot.git
+git clone https://github.com/<your-username>/rag-complaint-chatbot.git
 cd rag-complaint-chatbot
 ```
 
-### Create Virtual Environment
+## 2. Create Virtual Environment
 
 ```bash
 python -m venv venv
 ```
-
-Activate:
 
 Windows
 
@@ -315,60 +214,142 @@ Windows
 venv\Scripts\activate
 ```
 
-Linux/Mac
+Linux / Mac
 
 ```bash
 source venv/bin/activate
 ```
 
-### Install Dependencies
+## 3. Install Dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### Run EDA Notebook
+---
+
+# Running Task 1
+
+Run the notebook:
 
 ```bash
 jupyter notebook notebooks/task1_eda.ipynb
 ```
 
----
+Or execute preprocessing module:
 
-## Challenges Encountered
-
-- Large complaint dataset size
-- High computational cost of embedding generation
-- Product imbalance across complaint categories
-- Long narrative handling and chunk optimization
+```bash
+python src/preprocess.py
+```
 
 ---
 
-## Next Steps
+# Running Task 2
 
-### Task 3
+Build embeddings and vector database:
 
-- Build Retrieval Pipeline
-- Implement Similarity Search
-- Design Prompt Template
-- Integrate Large Language Model
-- Evaluate RAG Performance
+```bash
+python src/build_vector_store.py
+```
 
-### Task 4
+The script:
 
-- Build Interactive Gradio Interface
-- Display Retrieved Sources
-- Improve User Experience
-- Deploy End-to-End RAG Application
+1. Loads filtered complaint data
+2. Performs chunking
+3. Generates embeddings
+4. Creates ChromaDB collection
+5. Stores chunks and metadata
+6. Persists the vector index
 
 ---
 
-## Author
+# Testing
+
+Basic unit tests are included.
+
+Run:
+
+```bash
+pytest tests/
+```
+
+Example test:
+
+```text
+tests/test_preprocess.py
+```
+
+---
+
+# Error Handling
+
+Basic robustness checks have been added to the pipeline:
+
+* Missing file detection
+* Empty dataset validation
+* Safe text preprocessing
+* Collection creation safeguards
+
+These checks improve reliability and make the codebase easier to extend in later tasks.
+
+---
+
+# Deliverables Completed
+
+## Task 1
+
+* [x] Exploratory Data Analysis
+* [x] Product Distribution Analysis
+* [x] Narrative Length Analysis
+* [x] Missing Narrative Analysis
+* [x] Product Filtering
+* [x] Text Cleaning
+* [x] Filtered Dataset Export
+
+## Task 2
+
+* [x] Stratified Sampling
+* [x] Text Chunking Module
+* [x] Embedding Generation Module
+* [x] ChromaDB Vector Store Module
+* [x] End-to-End Vector Store Pipeline
+* [x] Persistent Vector Index
+
+---
+
+# Challenges Encountered
+
+* Large-scale CFPB dataset processing
+* High percentage of missing narratives
+* Product category imbalance
+* Embedding generation computational cost
+* Chunk size optimization for retrieval performance
+
+---
+
+# Future Work
+
+## Task 3
+
+* Semantic Retriever Implementation
+* Similarity Search Optimization
+* Prompt Engineering
+* LLM Integration
+* RAG Evaluation
+
+## Task 4
+
+* Gradio User Interface
+* Source Citation Display
+* End-to-End Chatbot Integration
+* Deployment
+
+---
+
+# Author
 
 **Lalise Fufi**
 
 10 Academy – Artificial Intelligence Mastery Program
 
-Week 7 Challenge
-
-Intelligent Complaint Analysis for Financial Services
+Week 7 Challenge – Intelligent Complaint Analysis for Financial Services
