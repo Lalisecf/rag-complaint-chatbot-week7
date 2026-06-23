@@ -1,14 +1,23 @@
-# from src.retriever import retrieve_documents
+import faiss
+from pathlib import Path
 
-# def test_retrieve_documents():
+INDEX_PATH = Path("vector_store/faiss_index.bin")
 
-#     results = retrieve_documents(
-#         "credit card fraud",
-#         k=3
-#     )
 
-#     assert len(results) > 0
+def load_index():
 
-def test_dummy():
+    if not INDEX_PATH.exists():
+        raise FileNotFoundError(
+            f"{INDEX_PATH} not found"
+        )
 
-    assert True
+    return faiss.read_index(str(INDEX_PATH))
+
+
+def retrieve_documents(query, k=5):
+
+    index = load_index()
+
+    # retrieval logic here
+
+    return []
