@@ -327,22 +327,319 @@ These checks improve reliability and make the codebase easier to extend in later
 
 ---
 
-# Future Work
+## Updated Repository Structure
+
+```text
+rag-complaint-chatbot-week7/
+│
+├── data/
+│   ├── raw/
+│   │   └── complaint_embeddings.parquet
+│   └── processed/
+│       └── filtered_complaints.csv
+│
+├── notebooks/
+│   ├── task1_eda.ipynb
+│   ├── task3_rag_evaluation.ipynb
+│   └── task4_demo.ipynb
+│
+├── src/
+│   ├── preprocess.py
+│   ├── chunking.py
+│   ├── embedding.py
+│   ├── vector_store.py
+│   ├── build_vector_store.py
+│   ├── create_faiss_index.py
+│   ├── retriever.py
+│   ├── generator.py
+│   ├── prompt_template.py
+│   ├── rag_pipeline.py
+│   └── __init__.py
+│
+├── tests/
+│   ├── test_preprocess.py
+│   ├── test_retriever.py
+│   ├── test_rag_pipeline.py
+│   └── __init__.py
+│
+├── vector_store/
+│   ├── faiss_index.bin
+│   ├── documents.pkl
+│   └── metadata.pkl
+│
+├── app.py
+├── requirements.txt
+├── README.md
+└── .gitignore
+```
+
+---
+
+# Task 3: Retrieval-Augmented Generation (RAG)
+
+## Objectives
+
+Build a semantic retrieval system capable of:
+
+* Retrieving relevant complaint narratives
+* Providing context-aware answers
+* Supporting evidence-based decision making
+* Serving as the backend for an intelligent complaint chatbot
+
+## Retrieval Architecture
+
+### Embedding Model
+
+```text
+sentence-transformers/all-MiniLM-L6-v2
+```
+
+### Vector Search Engine
+
+```text
+FAISS (Facebook AI Similarity Search)
+```
+
+### Language Model
+
+```text
+google/flan-t5-base
+```
+
+## Components
+
+### Retriever
+
+Implemented in:
+
+```text
+src/retriever.py
+```
+
+Responsibilities:
+
+* Load FAISS index
+* Encode user query
+* Perform similarity search
+* Retrieve top-k complaint chunks
+* Return complaint metadata
+
+### Generator
+
+Implemented in:
+
+```text
+src/generator.py
+```
+
+Responsibilities:
+
+* Construct prompts
+* Generate natural-language answers
+* Ground responses using retrieved context
+
+### RAG Pipeline
+
+Implemented in:
+
+```text
+src/rag_pipeline.py
+```
+
+Pipeline Flow:
+
+```text
+User Question
+      ↓
+Query Embedding
+      ↓
+FAISS Retrieval
+      ↓
+Top-K Complaint Chunks
+      ↓
+Prompt Construction
+      ↓
+FLAN-T5 Generation
+      ↓
+Final Answer + Sources
+```
+
+## Evaluation Results
+
+| Question                                                  | Interpretation                                                                 | Score |
+| --------------------------------------------------------- | ------------------------------------------------------------------------------ | ----- |
+| Why are customers unhappy with credit cards?              | Relevant answer but based on a specific complaint rather than a broad summary. | 3.5/5 |
+| What fraud issues are common?                             | Strong retrieval of fraud-related complaints and identity theft concerns.      | 4.0/5 |
+| What billing disputes occur most often?                   | Accurately identified unauthorized charges and billing errors.                 | 4.5/5 |
+| Why do customers complain about money transfers?          | Weak retrieval due to limited representation in indexed subset.                | 2.0/5 |
+| What issues are reported for personal loans?              | Strong answer highlighting payment and credit reporting problems.              | 4.5/5 |
+| What credit card problems do customers report most often? | Relevant but focused on one complaint theme.                                   | 3.5/5 |
+| What fraud complaints are common among credit card users? | Very strong retrieval with multiple fraud scenarios represented.               | 4.5/5 |
+| Why do customers dispute credit card charges?             | Correctly identified unauthorized purchases and refund issues.                 | 4.0/5 |
+| What problems occur when making loan payments?            | Strong retrieval and accurate answer generation.                               | 4.5/5 |
+| How do credit reporting issues affect customers?          | Relevant answer regarding credit score damage and reporting inaccuracies.      | 4.5/5 |
+
+### Task 3 Summary
+
+The RAG system successfully retrieves semantically similar complaint narratives and generates evidence-based answers grounded in complaint data. Performance was strongest for Credit Card and Personal Loan complaint categories.
+
+---
+
+# Task 4: Interactive Chatbot Interface
+
+## Objectives
+
+Develop a user-friendly interface allowing stakeholders to interact with the complaint knowledge base using natural language.
+
+## Framework
+
+```text
+Gradio
+```
+
+Implemented in:
+
+```text
+app.py
+```
+
+## Features
+
+### Natural Language Question Input
+
+Users can ask questions such as:
+
+```text
+What fraud complaints are common among credit card users?
+```
+
+### AI-Generated Answers
+
+Responses are generated using the Retrieval-Augmented Generation pipeline.
+
+### Source Transparency
+
+The chatbot displays:
+
+* Complaint ID
+* Product Category
+* Company Name
+* Complaint Issue
+* Complaint Excerpt
+
+This improves explainability and trustworthiness.
+
+### Interactive Components
+
+* Question Textbox
+* Ask Button
+* AI Answer Panel
+* Retrieved Sources Panel
+* Clear Button
+
+## System Workflow
+
+```text
+User Question
+      ↓
+Retriever
+      ↓
+FAISS Similarity Search
+      ↓
+Top Complaint Chunks
+      ↓
+FLAN-T5 Generator
+      ↓
+Answer Generation
+      ↓
+Display Sources
+```
+
+---
+
+# Running Task 3
+
+```bash
+python src/create_faiss_index.py
+```
+
+Evaluate the RAG pipeline:
+
+```bash
+jupyter notebook notebooks/task3_rag_evaluation.ipynb
+```
+
+---
+
+# Running Task 4
+
+Launch the chatbot:
+
+```bash
+python app.py
+```
+
+Then open:
+
+```text
+http://127.0.0.1:7860
+```
+
+---
+
+# Deliverables Completed
+
+## Task 1
+
+* [x] Exploratory Data Analysis
+* [x] Narrative Cleaning
+* [x] Product Filtering
+* [x] Missing Value Analysis
+
+## Task 2
+
+* [x] Chunking Pipeline
+* [x] Embedding Generation
+* [x] Vector Store Construction
+* [x] Metadata Storage
 
 ## Task 3
 
-* Semantic Retriever Implementation
-* Similarity Search Optimization
-* Prompt Engineering
-* LLM Integration
-* RAG Evaluation
+* [x] FAISS Index Creation
+* [x] Semantic Retrieval
+* [x] Prompt Engineering
+* [x] FLAN-T5 Integration
+* [x] RAG Evaluation
 
 ## Task 4
 
-* Gradio User Interface
-* Source Citation Display
-* End-to-End Chatbot Integration
-* Deployment
+* [x] Gradio User Interface
+* [x] Answer Generation
+* [x] Source Citation Display
+* [x] Interactive Chatbot
+* [x] End-to-End RAG System
+
+---
+
+# Challenges Encountered
+
+* Processing large-scale CFPB complaint data
+* Memory limitations when loading full complaint embeddings
+* FAISS index construction on limited hardware
+* Context length limitations of FLAN-T5
+* Retrieval quality variations across product categories
+
+---
+
+# Future Improvements
+
+* Index the full complaint embedding dataset
+* Improve retrieval ranking strategies
+* Implement reranking models
+* Add conversation memory
+* Deploy chatbot to cloud infrastructure
+* Support advanced analytics dashboards
+
 
 ---
 
