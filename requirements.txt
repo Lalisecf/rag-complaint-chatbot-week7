@@ -10,3 +10,6 @@ langchain
 transformers
 gradio
 jupyter
+torch
+pyarrow
+pytest
