@@ -198,20 +198,20 @@ vector_store/
 ## 1. Clone Repository
 
 ```bash
-git clone https://github.com/<your-username>/rag-complaint-chatbot.git
-cd rag-complaint-chatbot
+git clone https://github.com/<lalisecf>/rag-complaint-chatbot-week7.git
+cd rag-complaint-chatbot-week7
 ```
 
 ## 2. Create Virtual Environment
 
 ```bash
-python -m venv venv
+python -m venv .venv
 ```
 
 Windows
 
 ```bash
-venv\Scripts\activate
+.venv\Scripts\activate
 ```
 
 Linux / Mac
