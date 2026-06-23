@@ -5,10 +5,14 @@ from src.prompt_template import PROMPT_TEMPLATE
 
 def answer_question(question):
 
-    docs = retrieve_documents(question)
+  
+    docs = retrieve_documents(
+    question,
+    k=10
+    )
 
     context = "\n\n".join(
-        [doc.page_content for doc in docs]
+        [d["document"] for d in docs]
     )
 
     prompt = PROMPT_TEMPLATE.format(

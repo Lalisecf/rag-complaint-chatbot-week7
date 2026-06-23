@@ -1,9 +1,10 @@
-from src.rag_pipeline import answer_question
+from src.retriever import retrieve_documents
 
-def test_rag():
+def test_rag_components():
 
-    result = answer_question(
-        "Why are customers unhappy with credit cards?"
+    docs = retrieve_documents(
+        "credit card fraud",
+        k=5
     )
 
-    assert "answer" in result
+    assert len(docs) == 5

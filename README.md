@@ -22,7 +22,7 @@ This interim submission covers:
 ## Repository Structure
 
 ```text
-rag-complaint-chatbot/
+rag-complaint-chatbot-week7/
 │
 ├── data/
 │   ├── raw/

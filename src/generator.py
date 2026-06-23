@@ -6,7 +6,6 @@ generator = pipeline(
     max_new_tokens=256
 )
 
-
 def generate_answer(prompt):
 
     result = generator(prompt)

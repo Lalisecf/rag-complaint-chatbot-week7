@@ -1,9 +1,10 @@
 from src.retriever import retrieve_documents
 
-def test_retriever():
+def test_retrieve_documents():
 
-    docs = retrieve_documents(
-        "credit card complaint"
+    results = retrieve_documents(
+        "credit card fraud",
+        k=3
     )
 
-    assert len(docs) > 0
+    assert len(results) > 0
